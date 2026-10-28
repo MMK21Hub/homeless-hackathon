@@ -35,9 +35,9 @@ Hackathon project in progress.
 
 | Piece | State |
 | --- | --- |
-| Agent loop (`agent.py`) | Built, tested against stand-in tools. Not yet run with the real ones |
+| Agent loop (`agent.py`) | Built. Runs end to end against the real logic tools |
 | `fold()` (`tools/fold.py`) | Built, caches to `data/cache/` |
-| Logic tools (`tools/`) | First versions in, signatures do not match [idea.md](idea.md) yet |
+| Logic tools (`tools/`) | Built and tested, 9 tests in `tests/test_tools.py` |
 | Streamlit UI (`app.py`) | Not started |
 | Target sequences | In `data/target.fasta`, healthy checked against UniProt P0CG48 |
 
@@ -54,6 +54,12 @@ Hackathon project in progress.
 | Mish | Frontend and printing |
 | Evan | Frontend |
 
+## Tests
+
+```bash
+python3 tests/test_tools.py
+```
+
 ## License
 
-Not chosen yet — the team needs to pick one before this is shared. Note that Gemma's weights carry their own terms, so check them before redistributing anything that includes the model.
+MIT, see [LICENSE](LICENSE). Note that Gemma's weights carry their own terms, so check them before redistributing anything that includes the model.

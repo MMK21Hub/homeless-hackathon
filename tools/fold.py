@@ -42,7 +42,10 @@ def fold(sequence: str, retries: int = 3) -> dict:
     cache_file = CACHE_DIR / f"{key}.json"
 
     if cache_file.exists():
-        return json.loads(cache_file.read_text())
+        cached = json.loads(cache_file.read_text())
+        if "mean" not in cached:  # cache files written before the key was renamed
+            cached["mean"] = sum(cached["plddt"]) / len(cached["plddt"])
+        return cached
 
     for attempt in range(retries):
         try:
@@ -69,7 +72,7 @@ def fold(sequence: str, retries: int = 3) -> dict:
         "sequence": seq,
         "pdb": pdb,
         "plddt": plddt,
-        "mean_plddt": sum(plddt) / len(plddt),
+        "mean": sum(plddt) / len(plddt),
     }
     cache_file.write_text(json.dumps(result))
     return result

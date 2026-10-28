@@ -1,7 +1,23 @@
-def find_weak_regions(seq):
-    weak_beads = []
-    for i in range(len(seq)):
-        if seq[i] < 70:
-            weak_beads.append(i)
-    return weak_beads
-#finds beads with a PLDDT score less than 70 and returns their indices in a list.
+def _region(plddt, start, end):
+    scores = plddt[start - 1:end]
+    return {"start": start, "end": end, "mean": sum(scores) / len(scores)}
+
+
+def find_weak_regions(plddt, threshold=70):
+    """Group consecutive beads scoring below the threshold into stretches.
+
+    Takes the per-bead pLDDT list from fold(). Positions are 1-indexed and
+    inclusive, so {"start": 3, "end": 5} means beads 3, 4 and 5.
+    """
+    regions = []
+    start = None
+    for position, score in enumerate(plddt, start=1):
+        if score < threshold:
+            if start is None:
+                start = position
+        elif start is not None:
+            regions.append(_region(plddt, start, position - 1))
+            start = None
+    if start is not None:
+        regions.append(_region(plddt, start, len(plddt)))
+    return regions

@@ -59,10 +59,10 @@ Run Gemma 4 locally with Ollama and build the loop that lets it choose tools, re
 
 **Tasks**
 - [ ] First 10 minutes: check the ESMFold API address, sequence length limit and response format against its documentation (not yet verified)
-- [ ] Implement `fold(sequence)` returning the PDB text, per-bead pLDDT and the mean
-- [ ] Confirm the scale of the pLDDT values (0 to 1 or 0 to 100) and normalise to 0 to 100
-- [ ] Cache every result on disk, keyed by sequence, so repeated folds are instant and a backup run works offline
-- [ ] Handle timeouts and rate limits with one retry and a clear error
+- [x] Implement `fold(sequence)` returning the PDB text, per-bead pLDDT and the mean
+- [x] Confirm the scale of the pLDDT values (0 to 1 or 0 to 100) and normalise to 0 to 100
+- [x] Cache every result on disk, keyed by sequence, so repeated folds are instant and a backup run works offline
+- [x] Handle timeouts and rate limits with one retry and a clear error
 
 **Done when:** `fold()` returns a valid score for the healthy and damaged sequences, and a second call for the same sequence returns from cache.
 
@@ -77,11 +77,11 @@ Run Gemma 4 locally with Ollama and build the loop that lets it choose tools, re
 Plain Python, no AI needed. Test each one from a script.
 
 **Tasks**
-- [ ] `find_weak_regions()` groups consecutive beads below the threshold into stretches
-- [ ] `apply_mutation()` rejects invalid positions and letters outside the 20 amino acids, and refuses no-op mutations
-- [ ] `commit_or_revert()` keeps a change only if the mean score rose, and appends a `round_entry`
-- [ ] Unit tests with fake `fold()` results
-- [ ] Do not allow the same failed mutation to be retried (track it in history)
+- [x] `find_weak_regions()` groups consecutive beads below the threshold into stretches
+- [x] `apply_mutation()` rejects invalid positions and letters outside the 20 amino acids, and refuses no-op mutations
+- [x] `commit_or_revert()` keeps a change only if the mean score rose, and appends a `round_entry`
+- [x] Unit tests with fake `fold()` results
+- [x] Do not allow the same failed mutation to be retried (track it in history)
 
 **Done when:** all three pass their tests and can be imported by the agent loop.
 
