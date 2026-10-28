@@ -1,16 +1,22 @@
-def commit_or_revert(currentPLDDT, PLDDT, newseq, seq):
-    if currentPLDDT > PLDDT:
-        PLDDT = currentPLDDT
-        seq = newseq
-        decision = True
-        #decision = 0
-    else:
-        decision = False
-        #decision = PLDDT - currentPLDDT
-    return decision, PLDDT, seq
-#looks at current PLDDT and compares it to the current average PLDDT. If current is larger
-# than average then the currentPLDDT is added to the average PLDDT and the
-# function returns True. 
-# If currentPLDDT is less than average then the function returns False 
-# and the average PLDDT remains unchanged.
-#The mutation is only committed if the currentPLDDT is greater than the average PLDDT. 
+def commit_or_revert(state, candidate):
+    """Keep a mutation only when it improves the best mean pLDDT."""
+    mean_before = state["best_mean"]
+    mean_after = candidate.get("mean", mean_before)
+    entry = {
+        "round": candidate.get("round"),
+        "mutation": candidate.get("mutation"),
+        "reason": candidate.get("reason", ""),
+        "mean_before": mean_before,
+        "mean_after": mean_before,
+        "kept": False,
+    }
+
+    if mean_after > mean_before:
+        state["best_sequence"] = candidate["sequence"]
+        state["best_mean"] = mean_after
+        state["best_plddt"] = candidate.get("plddt", state.get("best_plddt"))
+        entry["kept"] = True
+        entry["mean_after"] = mean_after
+
+    state["history"].append(entry)
+    return state

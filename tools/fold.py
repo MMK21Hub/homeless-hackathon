@@ -1,14 +1,16 @@
 # tools/fold.py
-import hashlib, json, time
+import hashlib
+import json
+import time
 from pathlib import Path
+
 import requests
 
-#TOKEN = "2wGSuBBXuyvBVXaZGjv3MO"
-# VERIFY against current ESM Atlas docs: URL, length limit, response format.
 FOLD_URL = "https://api.esmatlas.com/foldSequence/v1/pdb/"
-CACHE_DIR = Path("data/cache")
+CACHE_DIR = Path(__file__).resolve().parent.parent / "data" / "cache"
 VALID = set("ACDEFGHIKLMNPQRSTVWY")
-MAX_LEN = 400  # check the docs for the real limit
+MAX_LEN = 400
+
 
 def _validate(seq: str) -> str:
     seq = seq.strip().upper()
@@ -21,21 +23,20 @@ def _validate(seq: str) -> str:
         raise ValueError(f"Sequence too long ({len(seq)} > {MAX_LEN})")
     return seq
 
+
 def _parse_plddt(pdb_text: str) -> list[float]:
-    """One pLDDT per residue, read from the B-factor of each CA atom."""
+    """Read one pLDDT score per residue from the CA atom B-factor."""
     scores = []
     for line in pdb_text.splitlines():
         if line.startswith("ATOM") and line[12:16].strip() == "CA":
             scores.append(float(line[60:66]))
-    # Some predictors write 0-1, others 0-100. Normalise to 0-100.
     if scores and max(scores) <= 1.0:
-        scores = [s * 100 for s in scores]
+        scores = [score * 100 for score in scores]
     return scores
 
+
 def fold(sequence: str, retries: int = 3) -> dict:
-    """
-    Checks stuff and cache's output with json
-    """
+    """Fetch a predicted structure for a protein sequence and cache it by sequence."""
     seq = _validate(sequence)
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     key = hashlib.sha256(seq.encode()).hexdigest()[:16]
@@ -44,39 +45,37 @@ def fold(sequence: str, retries: int = 3) -> dict:
     if cache_file.exists():
         return json.loads(cache_file.read_text())
 
+    last_error = None
     for attempt in range(retries):
         try:
-            r = requests.post(FOLD_URL, data=seq, timeout=60)
-            if r.status_code == 200:
+            response = requests.post(FOLD_URL, data=seq, timeout=60)
+            if response.status_code == 200:
                 break
-            if r.status_code == 429:          # rate limited
+            if response.status_code == 429:
                 time.sleep(2 ** attempt * 2)
+                last_error = RuntimeError("Rate limited by fold API")
                 continue
-            r.raise_for_status()
-        except requests.RequestException:
+            response.raise_for_status()
+        except requests.RequestException as exc:
+            last_error = exc
             if attempt == retries - 1:
                 raise
             time.sleep(2 ** attempt)
     else:
+        if last_error is not None:
+            raise RuntimeError(f"Fold API failed after retries: {last_error}")
         raise RuntimeError("Fold API failed after retries")
 
-    pdb = r.text
+    pdb = response.text
     plddt = _parse_plddt(pdb)
     if len(plddt) != len(seq):
         raise RuntimeError(f"Got {len(plddt)} scores for {len(seq)} residues")
 
-    result = {
-        "sequence": seq,
-        "pdb": pdb,
-        "plddt": plddt,
-        "mean_plddt": sum(plddt) / len(plddt),
-    }
+    result = {"pdb": pdb, "plddt": plddt, "mean": sum(plddt) / len(plddt)}
     cache_file.write_text(json.dumps(result))
     return result
 
 
 if __name__ == "__main__":
-    INSULIN = "MALWMRLLPLLALLALWGPDPAAAFVNQHLCGSHLVEALYLVCGERGFFYTPKTRREAEDLQVGQVELGGGPGAGSLQPLALEGSLQKRGIVEQCCTSICSLYQLENYCN"
-    UBIQUITIN_GOOD = "MQIFVKTLTGKTITLEVEPSDTIENVKAKIQDKEGIPPDQQRLIFAGKQLEDGRTLSDYNIQKESTLHLVLRLRGG"
     UBIQUITIN_BAD = "MQIFVKTLTGKTITLEVEPSDTIENVKAKIQDHWQQLSERLLLIFAGKQLEDGRTLSDYNIQKESTLHLVLRLRGG"
     print(fold(UBIQUITIN_BAD))
