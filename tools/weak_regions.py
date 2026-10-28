@@ -1,23 +1,37 @@
-def _region(plddt, start, end):
-    scores = plddt[start - 1:end]
-    return {"start": start, "end": end, "mean": sum(scores) / len(scores)}
+def find_weak_regions(plddt, threshold: float = 70):
+    """Group consecutive low-confidence residues into contiguous stretches."""
+    if not isinstance(plddt, (list, tuple)):
+        raise TypeError("plddt must be a list or tuple of numbers")
 
-
-def find_weak_regions(plddt, threshold=70):
-    """Group consecutive beads scoring below the threshold into stretches.
-
-    Takes the per-bead pLDDT list from fold(). Positions are 1-indexed and
-    inclusive, so {"start": 3, "end": 5} means beads 3, 4 and 5.
-    """
     regions = []
     start = None
-    for position, score in enumerate(plddt, start=1):
+    total = 0.0
+    count = 0
+
+    for index, score in enumerate(plddt):
         if score < threshold:
             if start is None:
-                start = position
+                start = index
+                total = float(score)
+                count = 1
+            else:
+                total += float(score)
+                count += 1
         elif start is not None:
-            regions.append(_region(plddt, start, position - 1))
+            regions.append({
+                "start": start + 1,
+                "end": index,
+                "mean": total / count,
+            })
             start = None
+            total = 0.0
+            count = 0
+
     if start is not None:
-        regions.append(_region(plddt, start, len(plddt)))
+        regions.append({
+            "start": start + 1,
+            "end": len(plddt),
+            "mean": total / count,
+        })
+
     return regions

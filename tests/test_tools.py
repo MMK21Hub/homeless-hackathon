@@ -73,7 +73,10 @@ def test_commit_reverts_a_drop_and_a_tie():
         state = commit_or_revert(_state(), _candidate(mean))
         assert state["best_sequence"] == SEQ
         assert state["best_mean"] == 70.0
-        assert state["history"][-1]["kept"] is False
+        entry = state["history"][-1]
+        assert entry["kept"] is False
+        # The feed needs the score the attempt really got, not the old one.
+        assert entry["mean_before"] == 70.0 and entry["mean_after"] == mean
 
 
 def test_history_records_every_round_so_retries_can_be_blocked():

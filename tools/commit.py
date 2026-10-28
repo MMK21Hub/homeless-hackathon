@@ -1,28 +1,27 @@
 def commit_or_revert(state, candidate):
-    """Keep the candidate only if the mean pLDDT rose, otherwise throw it away.
+    """Keep a mutation only when it improves the best mean pLDDT.
 
-    state     = {"best_sequence": str, "best_mean": float, "history": list}
-    candidate = {"round": int, "mutation": str, "reason": str,
-                 "sequence": str, "mean": float}
-
-    Always appends one round_entry to history, kept or not, so the UI can show
-    the reverts and the agent can see what it has already tried.
+    Appends one round_entry to history either way. A reverted round still
+    records the score the attempt actually got, so the commentary feed can
+    show how bad it was.
     """
     mean_before = state["best_mean"]
-    mean_after = candidate["mean"]
+    mean_after = candidate.get("mean", mean_before)
     kept = mean_after > mean_before
 
-    state["history"].append({
-        "round": candidate["round"],
-        "mutation": candidate["mutation"],
-        "reason": candidate["reason"],
+    entry = {
+        "round": candidate.get("round"),
+        "mutation": candidate.get("mutation"),
+        "reason": candidate.get("reason", ""),
         "mean_before": mean_before,
         "mean_after": mean_after,
         "kept": kept,
-    })
+    }
 
     if kept:
         state["best_sequence"] = candidate["sequence"]
         state["best_mean"] = mean_after
+        state["best_plddt"] = candidate.get("plddt", state.get("best_plddt"))
 
+    state["history"].append(entry)
     return state

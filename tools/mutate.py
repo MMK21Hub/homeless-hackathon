@@ -1,27 +1,23 @@
-AMINO_ACIDS = set("ACDEFGHIKLMNPQRSTVWY")
+VALID = set("ACDEFGHIKLMNPQRSTVWY")
 
 
-def apply_mutation(sequence, position, new_letter):
-    """Swap one letter in the sequence. Position is 1-indexed.
+def apply_mutation(sequence: str, position: int, new_letter: str):
+    """Apply a single amino-acid substitution to a sequence."""
+    if not isinstance(sequence, str) or not sequence:
+        return {"ok": False, "sequence": sequence, "error": "Sequence must be a non-empty string"}
 
-    Returns {"ok": bool, "sequence": str, "error": str | None}. On failure the
-    original sequence comes back unchanged, so the caller can keep going.
-    """
-    def fail(error):
-        return {"ok": False, "sequence": sequence, "error": error}
+    if not isinstance(position, int):
+        return {"ok": False, "sequence": sequence, "error": "Position must be an integer"}
 
-    if isinstance(position, bool) or not isinstance(position, int):
-        return fail(f"Position must be a whole number, got {position!r}")
     if not 1 <= position <= len(sequence):
-        return fail(f"Position {position} is outside 1 to {len(sequence)}")
+        return {"ok": False, "sequence": sequence, "error": f"Position out of range: {position}"}
 
-    letter = str(new_letter).strip().upper()
-    if letter not in AMINO_ACIDS:
-        return fail(f"{new_letter!r} is not one of the 20 amino acids")
+    letter = str(new_letter or "").strip().upper()
+    if len(letter) != 1 or letter not in VALID:
+        return {"ok": False, "sequence": sequence, "error": f"Invalid amino acid: {new_letter!r}"}
 
-    old_letter = sequence[position - 1]
-    if old_letter == letter:
-        return fail(f"Position {position} is already {letter}, that is a no-op")
+    if sequence[position - 1] == letter:
+        return {"ok": False, "sequence": sequence, "error": "Mutation is a no-op"}
 
-    mutated = sequence[:position - 1] + letter + sequence[position:]
+    mutated = sequence[: position - 1] + letter + sequence[position:]
     return {"ok": True, "sequence": mutated, "error": None}
