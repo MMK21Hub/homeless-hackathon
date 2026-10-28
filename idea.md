@@ -102,7 +102,12 @@ About 3 minutes: show the damaged protein as a floppy low-score tangle, press go
 
 ## Team
 
-Add names and roles here.
+Joshua - Gemma4
+Charles - Gemma4 tools
+Mish - printer-related stuff and website frontend
+Tobi - web api
+Louis - Gemma4 tools
+Evan - website frontend
 
 ## License
 
