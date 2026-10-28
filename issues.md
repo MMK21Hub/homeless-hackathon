@@ -42,10 +42,10 @@ Run Gemma 4 locally with Ollama and build the loop that lets it choose tools, re
 **Tasks**
 - [ ] `ollama run gemma4` working on the demo laptop (use the largest size it can run)
 - [ ] One dummy tool call end to end by 0:20: model requests a tool, our code runs it, model reads the answer
-- [ ] System prompt: investigate before proposing, one mutation per round, always explain why in 1 to 2 sentences, never invent scores
-- [ ] Loop with a hard cap of 10 rounds; our code holds state, not the model
-- [ ] Validate every tool call; retry once on a malformed call, then skip the round
-- [ ] Emit one `round_entry` per round for the UI
+- [x] System prompt: investigate before proposing, one mutation per round, always explain why in 1 to 2 sentences, never invent scores
+- [x] Loop with a hard cap of 10 rounds; our code holds state, not the model
+- [x] Validate every tool call; retry once on a malformed call, then skip the round
+- [x] Emit one `round_entry` per round for the UI
 
 **Done when:** a full run completes with the real tools and every round produces a valid `round_entry`.
 
