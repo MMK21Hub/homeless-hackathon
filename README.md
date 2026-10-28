@@ -38,10 +38,16 @@ Hackathon project in progress.
 | Agent loop (`agent.py`) | Built. Runs end to end against the real logic tools |
 | `fold()` (`tools/fold.py`) | Built, caches to `data/cache/` |
 | Logic tools (`tools/`) | Built and tested, 9 tests in `tests/test_tools.py` |
-| Streamlit UI (`app.py`) | Not started |
+| UI | Next.js app started in `frontend/`. `app.py` is empty, so the Streamlit plan in [idea.md](idea.md) is out of date |
 | Target sequences | In `data/target.fasta`, healthy checked against UniProt P0CG48 |
 
-**Known blocker:** the ESM Atlas fold API returns 504 on sequences it has not seen before, so the damaged sequence has no score yet. The one damaged variant we have folded scores 86.6 against the healthy 90.5, a gap of only 3.9 points. The demo needs a bigger gap than that to be visible.
+**Known blocker:** the ESM Atlas fold API is not folding new sequences. Probed on 28 Oct 2026 with random sequences of 12 to 76 beads, every one returned 504 after 30 seconds. Sequences it has already folded still come back instantly, which is why it can look like it works. Check whether it is back with:
+
+```bash
+python3 tools/fold.py
+```
+
+Until it returns, the agent cannot do a real run, because every mutation makes a sequence nobody has folded. The damaged sequence in `data/target.fasta` therefore has no score yet. The one damaged variant we did fold scores 86.6 against the healthy 90.5, a gap of only 3.9 points, and the demo needs nearer 15 to be visible.
 
 ## Team
 

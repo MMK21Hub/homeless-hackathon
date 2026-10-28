@@ -54,20 +54,21 @@ def fold(sequence: str, retries: int = 3) -> dict:
             response = requests.post(FOLD_URL, data=seq, timeout=60)
             if response.status_code == 200:
                 break
-            if response.status_code == 429:
+            last_error = f"HTTP {response.status_code}"
+            if response.status_code == 429 or response.status_code >= 500:
                 time.sleep(2 ** attempt * 2)
-                last_error = RuntimeError("Rate limited by fold API")
                 continue
             response.raise_for_status()
         except requests.RequestException as exc:
             last_error = exc
-            if attempt == retries - 1:
-                raise
             time.sleep(2 ** attempt)
     else:
-        if last_error is not None:
-            raise RuntimeError(f"Fold API failed after retries: {last_error}")
-        raise RuntimeError("Fold API failed after retries")
+        raise RuntimeError(
+            f"Fold API failed after {retries} attempts ({last_error}). "
+            "A 504 means the ESM Atlas backend is not folding new sequences; "
+            "sequences already in data/cache/ still work. "
+            "Run `python3 tools/fold.py` to check whether it is back."
+        )
 
     pdb = response.text
     plddt = _parse_plddt(pdb)
@@ -80,5 +81,15 @@ def fold(sequence: str, retries: int = 3) -> dict:
 
 
 if __name__ == "__main__":
-    UBIQUITIN_BAD = "MQIFVKTLTGKTITLEVEPSDTIENVKAKIQDHWQQLSERLLLIFAGKQLEDGRTLSDYNIQKESTLHLVLRLRGG"
-    print(fold(UBIQUITIN_BAD))
+    # Is the fold API folding new sequences again? Uses a random sequence so it
+    # cannot come back from anyone's cache.
+    import random
+
+    probe = "".join(random.choice(sorted(VALID)) for _ in range(24))
+    print(f"Asking the fold API for a new 24-bead sequence ({probe})...")
+    try:
+        result = fold(probe, retries=1)
+    except Exception as exc:
+        print(f"\nDOWN for new sequences: {exc}")
+        raise SystemExit(1)
+    print(f"\nWORKING: got {len(result['plddt'])} scores, mean {result['mean']:.1f}")
