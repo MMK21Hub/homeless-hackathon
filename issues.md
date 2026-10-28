@@ -31,7 +31,7 @@ The agent emits one `round_entry` per round; the UI renders from that list.
 
 ---
 
-## Issue 1: Agent loop with Gemma 4 function calling
+## Issue 1: Agent loop with Gemma 4 function calling (Joshua)
 
 **Labels:** `core`  
 **Owner:** Agent lead  
