@@ -129,14 +129,14 @@ Plain Python, no AI needed. Test each one from a script.
 **Depends on:** Issue 2 (needs a working `fold()`)
 
 **Tasks**
-- [ ] Confirm the target sequence (first choice: ubiquitin, 76 beads) against UniProt
-- [ ] Find 4 to 6 buried oily positions in the core and swap them for charged or polar letters to create the damaged sequence
+- [x] Confirm the target sequence (first choice: ubiquitin, 76 beads) against UniProt
+- [x] Find 4 to 6 buried oily positions in the core and swap them for charged or polar letters to create the damaged sequence
 - [ ] **By 0:15:** fold healthy and damaged, report the score gap. Aim for 15+ points. If smaller, damage more or scramble a whole stretch
-- [ ] Commit both sequences to `data/target.fasta`
+- [x] Commit both sequences to `data/target.fasta`
 - [ ] After the first good run, save it as the backup replay
-- [ ] Write the 3-minute demo script and rehearse it
-- [ ] Finish the README: team names, license, accurate setup commands
-- [ ] Prepare plain answers to: what is a protein, what does pLDDT mean, why does the agent revert changes, what is not claimed (a lab test would be next)
+- [x] Write the 3-minute demo script (rehearsal still to do)
+- [x] Finish the README: team names, license, accurate setup commands
+- [x] Prepare plain answers to: what is a protein, what does pLDDT mean, why does the agent revert changes, what is not claimed (a lab test would be next)
 
 **Done when:** the baseline gap is confirmed, a backup run exists, and everyone can give the demo.
 
