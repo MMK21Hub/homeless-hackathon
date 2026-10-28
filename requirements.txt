@@ -1,1 +1,4 @@
 ollama
+requests
+streamlit
+py3Dmol
