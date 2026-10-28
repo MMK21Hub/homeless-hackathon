@@ -65,6 +65,11 @@
   dependencies:
     "@tybys/wasm-util" "^0.10.3"
 
+"@opuu/cat-printer@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@opuu/cat-printer/-/cat-printer-0.1.0.tgz#1397869b58fbdaa8725ff87053fba18533fa0343"
+  integrity sha512-ipCr0xBUzYM+hwQw24HzS8gQ08Mkpi8MxuyZgKBC4wqBw7VrN3f9Keut/ziRNSzQNgWLnU5T7u/SjkELoOPqDw==
+
 "@oxc-project/types@=0.155.0":
   version "0.155.0"
   resolved "https://registry.yarnpkg.com/@oxc-project/types/-/types-0.155.0.tgz#a3525bff41bc0575839e95d2064635dd73dfef81"
