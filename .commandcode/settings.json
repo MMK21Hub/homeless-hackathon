@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Shell(./node_modules/.bin/tsc:*)",
+      "Shell(yarn:*)",
+      "Shell(npm:*)",
+      "Shell(ls:*)"
+    ],
+    "deny": [],
+    "defaultMode": "default"
+  }
+}
