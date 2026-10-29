@@ -32,3 +32,9 @@ Beware that the rest of the markdown files are mostly or fully AI generated, but
 | Tobi | Web API |
 | Mish | Cat printer |
 | Evan | Frontend |
+
+## License
+
+All our code is made available under the [MIT license](LICENSE).
+
+Note that this project requires Gemma 4, which is licensed under [Apache 2.0](https://ai.google.dev/gemma/apache_2).
