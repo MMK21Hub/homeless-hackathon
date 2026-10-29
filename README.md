@@ -1,71 +1,40 @@
-# Fold Rescue
+# AlphaRefold
 
-An AI agent that repairs a broken protein by trial and error, using a structure predictor as its lab bench. Built for the Gemma hackathon with Gemma 4 and native function calling.
+This was our submission for the [Hacktoberfest Hack Day Loughborough][1] (2026), a 2-hour local AI hackathon hosted by [Loughborough DigiTech][2].
 
-We take a small, well-known protein (ubiquitin, 76 beads), deliberately damage its core, then let a Gemma 4 agent repair it one mutation at a time for up to 10 rounds. Each round it folds the sequence, finds the floppiest stretch, proposes one swap and explains why. If the score rose the change is kept, otherwise it is undone and the agent is told.
+[1]: https://events.mlh.com/events/15347-hacktoberfest-hack-day-loughborough-x-digital-technologies-network-digitech
+[2]: https://www.lboro.ac.uk/departments/compsci/innovation/digital-technologies-network/
 
-- **[idea.md](idea.md)** — what a protein is, how the loop works, architecture, limitations
-- **[DEMO.md](DEMO.md)** — the 3-minute demo script and plain answers to likely questions
-- **[issues.md](issues.md)** — the task breakdown and who owns what
+## The idea and project
 
-## Setup
+Protein folding is cool. What if we gave an AI agent a broken protein, and let it iteratively mutate it and call AlphaFold to get it to a well-formed protein? As it works, a rendering of the protein-in-progress will be printed on a MXW01 cat printer.
 
-```bash
-# 1. Install dependencies
-pip install -r requirements.txt
+In 2 hours, we made a tool-calling harness for Gemma 4 26B, a Next.js frontend, a Python backend to do the protein folding, and some TypeScript code for printing to the cat printer from the browser.
 
-# 2. Get Gemma 4 running locally (several GB, start it early)
-ollama pull gemma4
+Unfortunately, in true software development fashion, we weren't able to put all the parts together in time for submission, so there's no shippable form of this project.
 
-# 3. Launch the app
-streamlit run app.py
-```
+## More info
 
-The agent talks to Ollama at `localhost:11434`. To use a model on another machine instead, forward that port over SSH and leave the window open:
+Beware that the rest of the markdown files are mostly or fully AI generated, but if you want to take a look:
 
-```bash
-ssh -L 11434:localhost:11434 user@their-ip
-```
+- [about.md](about.md) has more technical info about the project
+- [idea.md](idea.md) has details of the idea, and an implementation plan
+- [issues.md](issues.md) contains tasks that need to be completed
+- [DEMO.md](DEMO.md) has guidance on demo-ing the project
 
-`ollama list` in a second terminal confirms the model is reachable.
-
-## Status
-
-Hackathon project in progress.
-
-| Piece | State |
-| --- | --- |
-| Agent loop (`agent.py`) | Built. Runs end to end against the real logic tools |
-| `fold()` (`tools/fold.py`) | Built, caches to `data/cache/` |
-| Logic tools (`tools/`) | Built and tested, 9 tests in `tests/test_tools.py` |
-| UI | Next.js app started in `frontend/`. `app.py` is empty, so the Streamlit plan in [idea.md](idea.md) is out of date |
-| Target sequences | In `data/target.fasta`, healthy checked against UniProt P0CG48 |
-
-**Known blocker:** the ESM Atlas fold API is not folding new sequences. Probed on 28 Oct 2026 with random sequences of 12 to 76 beads, every one returned 504 after 30 seconds. Sequences it has already folded still come back instantly, which is why it can look like it works. Check whether it is back with:
-
-```bash
-python3 tools/fold.py
-```
-
-Until it returns, the agent cannot do a real run, because every mutation makes a sequence nobody has folded. The damaged sequence in `data/target.fasta` therefore has no score yet. The one damaged variant we did fold scores 86.6 against the healthy 90.5, a gap of only 3.9 points, and the demo needs nearer 15 to be visible.
-
-## Team
+## Team roles
 
 | Name | Role |
-| --- | --- |
+| ---- | ---- |
 | Joshua | Agent loop |
 | Charles | `fold()` and tools |
 | Louis | Logic tools |
 | Tobi | Web API |
-| Mish | Frontend and printing |
+| Mish | Cat printer |
 | Evan | Frontend |
-
-## Tests
-
-```bash
-python3 tests/test_tools.py
-```
 
 ## License
 
-MIT, see [LICENSE](LICENSE). Note that Gemma's weights carry their own terms, so check them before redistributing anything that includes the model.
+All our code is made available under the [MIT license](LICENSE).
+
+Note that this project requires Gemma 4, which is licensed under [Apache 2.0](https://ai.google.dev/gemma/apache_2).
